@@ -26,13 +26,16 @@ if (isset($_SESSION['MM_Usuario'])) {
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="utf-8">
-    <title>MK - AUTH :: <?= htmlspecialchars($manifestTitle . " - V " . $manifestVersion); ?></title>
+    <title>MK - AUTH :: <?php echo $Manifest->{'name'} . " - V " . $Manifest->{'version'};  ?></title>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js">
-    <link rel="stylesheet" href="../../estilos/mk-auth.css">
-    <link rel="stylesheet" href="../../estilos/font-awesome.css">
+    <link href="../../estilos/mk-auth.css" rel="stylesheet" type="text/css" />
+    <link href="../../estilos/font-awesome.css" rel="stylesheet" type="text/css" />
+
     <script src="../../scripts/jquery.js"></script>
     <script src="../../scripts/mk-auth.js"></script>
+    <link href="../../estilos/bi-icons.css" rel="stylesheet" type="text/css" />
+    <link href="css/bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="css/css.css" rel="stylesheet" type="text/css" />
 
     <style type="text/css">
         /* Estilos CSS personalizados */
@@ -236,7 +239,7 @@ if (isset($_SESSION['MM_Usuario'])) {
             $searchCondition = " WHERE p.nome LIKE ? OR p.valor LIKE ?";
         }
 
-        $countQuery = "SELECT COUNT(*) AS client_count FROM sis_plano WHERE oculto = 'sim'";
+        $countQuery = "SELECT COUNT(*) AS client_count FROM sis_plano WHERE oculto = 'nao'";
 
         if (!empty($_GET['search'])) {
             $countQuery .= " AND (nome LIKE ? OR valor LIKE ?)";
@@ -287,12 +290,12 @@ if (isset($_SESSION['MM_Usuario'])) {
                     $search = '%' . mysqli_real_escape_string($link, $_GET['search']) . '%';
 
                     if (!empty($_GET['search'])) {
-                        $searchCondition = " AND (p.nome LIKE ? OR p.valor LIKE ?) AND p.oculto = 'sim'";
+                        $searchCondition = " AND (p.nome LIKE ? OR p.valor LIKE ?) AND p.oculto = 'nao'";
                     }
 
                     $query = "SELECT p.uuid_plano, p.nome, p.valor, p.velup, p.veldown
                             FROM sis_plano p
-                            WHERE p.oculto = 'sim'"
+                            WHERE p.oculto = 'nao'"
                         . $searchCondition .
                         " ORDER BY p.valor DESC";
 
