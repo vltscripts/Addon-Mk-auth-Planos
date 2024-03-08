@@ -83,7 +83,7 @@ $manifestVersion = isset($Manifest->{'version'}) ? $Manifest->{'version'} : '';
         }
 
         table th {
-            background-color: #4caf50;
+            background-color: #0d6cea;
             color: white;
             font-weight: bold;
             text-align: center;
@@ -199,15 +199,18 @@ $manifestVersion = isset($Manifest->{'version'}) ? $Manifest->{'version'} : '';
     if ($acesso_permitido) {
         // Formulário Atualizado com Funcionalidade de Busca
         ?>
-    <form id="searchForm" method="GET">
-    <label for="search">Buscar Cliente:</label>
-    <input type="text" id="search" name="search" placeholder="Digite o nome do cliente" value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
-    <input type="submit" value="Buscar">
-    <button type="button" class="button-clear" onclick="clearSearch()">Limpar</button>
-    </form>
-
-
-
+<form id="searchForm" method="GET">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+        <div style="width: 80%; margin-right: 10px;">
+            <label for="search" style="font-weight: bold; margin-bottom: 5px;">Buscar Plano:</label>
+            <input type="text" id="search" name="search" placeholder="Digite o Nome do Plano " value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc;">
+        </div>
+        <div style="display: flex; align-items: flex-end; flex-direction: row;">
+            <input type="submit" value="Buscar" style="padding: 10px; border: 1px solid #ccc; background-color: #4caf50; color: white; font-weight: bold; cursor: pointer; border-radius: 5px;">
+            <button type="button" class="button-clear" onclick="clearSearch()" style="margin-left: 10px; padding: 10px; border: 1px solid #ccc; background-color: #f44336; color: white; font-weight: bold; cursor: pointer; border-radius: 5px;">Limpar</button>
+        </div>
+    </div>
+</form>
 
         <?php
         // Dados de conexão com o banco de dados já estão em config.php
@@ -292,15 +295,37 @@ $manifestVersion = isset($Manifest->{'version'}) ? $Manifest->{'version'} : '';
                             $nomeClienteClass = ($rowNumber % 2 == 0) ? 'nome_cliente' : 'nome_cliente highlight';
 
         echo "<tr class='$nomeClienteClass'>";
-        echo "<td class='plan-name' style='border: 1px solid #ddd;'><span style='color: blue; font-weight: bold; cursor: pointer;'>" . $row['nome'] . "</span></td>";
-        echo "<td style='text-align: center; color: #283fda; font-weight: bold; border: 1px solid #ddd;'>" . $row['valor'] . "</td>";
+		// Nome do Plano
+        echo "<td class='plan-name' style='border: 1px solid #ddd; position: relative;'>";
+        echo "<img src='img/plano.png' alt='Ícone de Nome' width='25' height='25' style='position: absolute; left: 0; top: 50%; transform: translateY(-50%);'> ";
+        echo "<span style='color: blue; font-weight: bold; cursor: pointer;'>" . $row['nome'] . "</span>";
+        echo "</td>";
+        
+		// Valor
+		echo "<td style='text-align: center; color: #283fda; font-weight: bold; border: 1px solid #ddd; position: relative;'>";
+        echo "<img src='img/valor.png' alt='Ícone de Valor' width='20' height='20' style='position: absolute; left: 0; top: 50%; transform: translateY(-50%);'> ";
+        echo $row['valor'];
+        echo "</td>";
 
-        // Adiciona a cor verde (#4caf50) e borda à direita e à esquerda nos resultados da coluna "Upload"
-        echo "<td style='text-align: center; color: #da6a28; font-weight: bold; border: 1px solid #ddd;'>" . $row['velup'] . "</td>";
+		
+        // Upload
+        echo "<td style='text-align: center; color: #da6a28; font-weight: bold; border: 1px solid #ddd; position: relative;'>";
+        echo "<img src='img/upload.png' alt='Ícone de Upload' width='20' height='20' style='position: absolute; left: 0; top: 50%; transform: translateY(-50%);'> ";
+        echo $row['velup'];
+        echo "</td>";
 
-        // Adiciona a cor verde (#4caf50) e borda à esquerda nos resultados da coluna "Download"
-        echo "<td style='text-align: center; color: #da6a28; font-weight: bold; border-left: 1px solid #ddd;'>" . $row['veldown'] . "</td>";
-        echo "<td style='text-align: center; color: blue; font-weight: bold; border: 1px solid #ddd;'><a href='/admin/planos_alt.hhvm?uuid=" . $row['uuid_plano'] . "' style='color: blue; font-weight: bold; cursor: pointer;'>Alterar</a></td>";
+        // Download
+        echo "<td style='text-align: center; color: #da6a28; font-weight: bold; border-left: 1px solid #ddd; position: relative;'>";
+        echo "<img src='img/download.png' alt='Ícone de Download' width='20' height='20' style='position: absolute; left: 0; top: 50%; transform: translateY(-50%);'> ";
+        echo $row['veldown'];
+        echo "</td>";
+
+        // Alterar Valor
+        echo "<td style='text-align: center; color: blue; font-weight: bold; border: 1px solid #ddd; position: relative;'>";
+        echo "<img src='img/alterar.png' alt='Ícone de Alterar' width='20' height='20' style='position: absolute; left: 0; top: 50%; transform: translateY(-50%);'> ";
+        echo "<a href='/admin/planos_alt.hhvm?uuid=" . $row['uuid_plano'] . "' style='color: blue; font-weight: bold; cursor: pointer;'>Alterar</a>";
+        echo "</td>";
+
         echo "</tr>";
     }
                     } else {
