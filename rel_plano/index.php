@@ -223,13 +223,6 @@ if (isset($_SESSION['MM_Usuario'])) {
     </div>
 </form>
 
-
-
-
-
-
-
-
         <?php
         // Dados de conexão com o banco de dados já estão em config.php
         $searchCondition = '';
@@ -313,15 +306,11 @@ if (isset($_SESSION['MM_Usuario'])) {
                             $nomeClienteClass = ($rowNumber % 2 == 0) ? 'nome_cliente' : 'nome_cliente highlight';
 
         echo "<tr class='$nomeClienteClass'>";
-echo "<td class='plan-name' style='border: 1px solid #ddd; position: relative;'>";
-
-// Adiciona o ícone do lado esquerdo
-echo "<img src='img/plano.png' alt='Ícone de Nome' width='25' height='25' style='position: absolute; left: 0; top: 50%; transform: translateY(-50%);'> ";
-
-// Adiciona o nome
-echo "<span style='color: blue; font-weight: bold; cursor: pointer;'>" . $row['nome'] . "</span>";
-
-echo "</td>";
+        // Plano 
+		echo "<td class='plan-name' style='border: 1px solid #ddd; position: relative;'>";
+        echo "<img src='img/plano.png' alt='Ícone de Nome' width='25' height='25' style='position: absolute; left: 0; top: 50%; transform: translateY(-50%);'> ";
+        echo "<span style='color: blue; font-weight: bold; cursor: pointer;'>" . $row['nome'] . "</span>";
+        echo "</td>";
         
 		// Valor
 		echo "<td style='text-align: center; color: #283fda; font-weight: bold; border: 1px solid #ddd; position: relative;'>";
