@@ -14,26 +14,34 @@ $manifestVersion = isset($Manifest->{'version'}) ? $Manifest->{'version'} : '';
 ?>
 
 <!DOCTYPE html>
+<?php
+if (isset($_SESSION['MM_Usuario'])) {
+    echo '<html lang="pt-BR">'; // Fix versão antiga MK-AUTH
+} else {
+    echo '<html lang="pt-BR" class="has-navbar-fixed-top">';
+}
+?>
 <html lang="pt-BR">
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="utf-8">
-    <title>MK - AUTH :: <?php echo htmlspecialchars($manifestTitle . " - V " . $manifestVersion); ?></title>
+    <title>MK - AUTH :: <?= htmlspecialchars($manifestTitle . " - V " . $manifestVersion); ?></title>
 
-    <link href="../../estilos/mk-auth.css" rel="stylesheet" type="text/css" />
-    <link href="../../estilos/font-awesome.css" rel="stylesheet" type="text/css" />
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js">
+    <link rel="stylesheet" href="../../estilos/mk-auth.css">
+    <link rel="stylesheet" href="../../estilos/font-awesome.css">
     <script src="../../scripts/jquery.js"></script>
     <script src="../../scripts/mk-auth.js"></script>
 
     <style type="text/css">
         /* Estilos CSS personalizados */
         body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-top: 40px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 0;
+            color: #333;
         }
 
         form,
@@ -212,6 +220,13 @@ $manifestVersion = isset($Manifest->{'version'}) ? $Manifest->{'version'} : '';
     </div>
 </form>
 
+
+
+
+
+
+
+
         <?php
         // Dados de conexão com o banco de dados já estão em config.php
         $searchCondition = '';
@@ -221,7 +236,7 @@ $manifestVersion = isset($Manifest->{'version'}) ? $Manifest->{'version'} : '';
             $searchCondition = " WHERE p.nome LIKE ? OR p.valor LIKE ?";
         }
 
-        $countQuery = "SELECT COUNT(*) AS client_count FROM sis_plano WHERE oculto = 'nao'";
+        $countQuery = "SELECT COUNT(*) AS client_count FROM sis_plano WHERE oculto = 'sim'";
 
         if (!empty($_GET['search'])) {
             $countQuery .= " AND (nome LIKE ? OR valor LIKE ?)";
@@ -272,12 +287,12 @@ $manifestVersion = isset($Manifest->{'version'}) ? $Manifest->{'version'} : '';
                     $search = '%' . mysqli_real_escape_string($link, $_GET['search']) . '%';
 
                     if (!empty($_GET['search'])) {
-                        $searchCondition = " AND (p.nome LIKE ? OR p.valor LIKE ?) AND p.oculto = 'nao'";
+                        $searchCondition = " AND (p.nome LIKE ? OR p.valor LIKE ?) AND p.oculto = 'sim'";
                     }
 
                     $query = "SELECT p.uuid_plano, p.nome, p.valor, p.velup, p.veldown
                             FROM sis_plano p
-                            WHERE p.oculto = 'nao'"
+                            WHERE p.oculto = 'sim'"
                         . $searchCondition .
                         " ORDER BY p.valor DESC";
 
@@ -295,11 +310,15 @@ $manifestVersion = isset($Manifest->{'version'}) ? $Manifest->{'version'} : '';
                             $nomeClienteClass = ($rowNumber % 2 == 0) ? 'nome_cliente' : 'nome_cliente highlight';
 
         echo "<tr class='$nomeClienteClass'>";
-		// Nome do Plano
-        echo "<td class='plan-name' style='border: 1px solid #ddd; position: relative;'>";
-        echo "<img src='img/plano.png' alt='Ícone de Nome' width='25' height='25' style='position: absolute; left: 0; top: 50%; transform: translateY(-50%);'> ";
-        echo "<span style='color: blue; font-weight: bold; cursor: pointer;'>" . $row['nome'] . "</span>";
-        echo "</td>";
+echo "<td class='plan-name' style='border: 1px solid #ddd; position: relative;'>";
+
+// Adiciona o ícone do lado esquerdo
+echo "<img src='img/plano.png' alt='Ícone de Nome' width='25' height='25' style='position: absolute; left: 0; top: 50%; transform: translateY(-50%);'> ";
+
+// Adiciona o nome
+echo "<span style='color: blue; font-weight: bold; cursor: pointer;'>" . $row['nome'] . "</span>";
+
+echo "</td>";
         
 		// Valor
 		echo "<td style='text-align: center; color: #283fda; font-weight: bold; border: 1px solid #ddd; position: relative;'>";
