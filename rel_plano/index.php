@@ -223,42 +223,6 @@ if (isset($_SESSION['MM_Usuario'])) {
     </div>
 </form>
 
-        <?php
-        // Dados de conexão com o banco de dados já estão em config.php
-        $searchCondition = '';
-        $search = '%' . mysqli_real_escape_string($link, $_GET['search']) . '%';
-
-        if (!empty($_GET['search'])) {
-            $searchCondition = " WHERE p.nome LIKE ? OR p.valor LIKE ?";
-        }
-
-        $countQuery = "SELECT COUNT(*) AS client_count FROM sis_plano WHERE oculto = 'nao'";
-
-        if (!empty($_GET['search'])) {
-            $countQuery .= " AND (nome LIKE ? OR valor LIKE ?)";
-        }
-
-        $stmt = mysqli_prepare($link, $countQuery);
-
-        if (!empty($_GET['search'])) {
-            $search = '%' . mysqli_real_escape_string($link, $_GET['search']) . '%';
-            mysqli_stmt_bind_param($stmt, "ss", $search, $search);
-        }
-
-        mysqli_stmt_execute($stmt);
-        $countResult = mysqli_stmt_get_result($stmt);
-
-        if ($countResult) {
-            $countRow = mysqli_fetch_assoc($countResult);
-            $clientCount = $countRow['client_count'];
-
-            echo "<div class='client-count-container'><p class='client-count blue'>Quantidade de Planos: $clientCount</p></div>";
-        } else {
-            echo "<div class='client-count-container'><p class='client-count blue'>Erro ao obter a quantidade de planos</p></div>";
-        }
-
-        ?>
-
         <div class="table-container">
             <table style="border-collapse: collapse;">
                 <thead>
@@ -271,54 +235,59 @@ if (isset($_SESSION['MM_Usuario'])) {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php
-                    // Adicione a condição de busca, se houver
-                    $searchCondition = '';
-                    if (!empty($_GET['search'])) {
-                        $search = mysqli_real_escape_string($link, $_GET['search']);
-                        $searchCondition = " AND (p.nome LIKE '%$search%' OR p.valor LIKE '%$search%')";
-                    }
+        <?php
+        // Adicione a condição de busca, se houver
+        $searchCondition = '';
+        $search = '';
+        if (isset($_GET['search'])) {
+        $search = '%' . mysqli_real_escape_string($link, $_GET['search']) . '%';
+        $searchCondition = " AND (p.nome LIKE ? OR p.valor LIKE ?)";
+        }
 
-                    $searchCondition = '';
-                    $search = '%' . mysqli_real_escape_string($link, $_GET['search']) . '%';
+        $query = "SELECT p.uuid_plano, p.nome, p.valor, p.velup, p.veldown
+          FROM sis_plano p
+          WHERE p.oculto = 'nao'"
+        . $searchCondition .
+        " ORDER BY p.valor DESC";
 
-                    if (!empty($_GET['search'])) {
-                        $searchCondition = " AND (p.nome LIKE ? OR p.valor LIKE ?) AND p.oculto = 'nao'";
-                    }
+        $stmt = mysqli_prepare($link, $query);
 
-                    $query = "SELECT p.uuid_plano, p.nome, p.valor, p.velup, p.veldown
-                            FROM sis_plano p
-                            WHERE p.oculto = 'nao'"
-                        . $searchCondition .
-                        " ORDER BY p.valor DESC";
+        if (!empty($search)) {
+        mysqli_stmt_bind_param($stmt, "ss", $search, $search);
+        }
 
-                    $stmt = mysqli_prepare($link, $query);
-                    mysqli_stmt_bind_param($stmt, "ss", $search, $search);
-                    mysqli_stmt_execute($stmt);
-                    $result = mysqli_stmt_get_result($stmt);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
 
-                    if ($result) {
-                        $rowNumber = 0;
-                        while ($row = mysqli_fetch_assoc($result)) {
-                            $nome_por_num_titulo = "Nome do Cliente: " . $row['nome'];
-                            $rowNumber++;
+        // Resto do código para processar o resultado...
 
-                            $nomeClienteClass = ($rowNumber % 2 == 0) ? 'nome_cliente' : 'nome_cliente highlight';
+        $total_boletos_ = 0; // Inicialize a variável de contagem
+
+        // Loop através dos resultados da consulta e exibir os dados na tabela
+        if ($result) {
+        $rowNumber = 0;
+        while ($row = mysqli_fetch_assoc($result)) {
+        $nome_por_num_titulo = "Nome do Cliente: " . $row['nome'];
+        $rowNumber++;
+
+        // Incrementar o contador de boletos
+        $total_boletos_++;
+
+        $nomeClienteClass = ($rowNumber % 2 == 0) ? 'nome_cliente' : 'nome_cliente highlight';
 
         echo "<tr class='$nomeClienteClass'>";
         // Plano 
-		echo "<td class='plan-name' style='border: 1px solid #ddd; position: relative;'>";
+        echo "<td class='plan-name' style='border: 1px solid #ddd; position: relative;'>";
         echo "<img src='img/plano.png' alt='Ícone de Nome' width='25' height='25' style='position: absolute; left: 0; top: 50%; transform: translateY(-50%);'> ";
         echo "<span style='color: blue; font-weight: bold; cursor: pointer;'>" . $row['nome'] . "</span>";
         echo "</td>";
-        
-		// Valor
-		echo "<td style='text-align: center; color: #283fda; font-weight: bold; border: 1px solid #ddd; position: relative;'>";
+
+        // Valor
+        echo "<td style='text-align: center; color: #283fda; font-weight: bold; border: 1px solid #ddd; position: relative;'>";
         echo "<img src='img/valor.png' alt='Ícone de Valor' width='20' height='20' style='position: absolute; left: 0; top: 50%; transform: translateY(-50%);'> ";
         echo $row['valor'];
         echo "</td>";
 
-		
         // Upload
         echo "<td style='text-align: center; color: #da6a28; font-weight: bold; border: 1px solid #ddd; position: relative;'>";
         echo "<img src='img/upload.png' alt='Ícone de Upload' width='20' height='20' style='position: absolute; left: 0; top: 50%; transform: translateY(-50%);'> ";
@@ -339,9 +308,13 @@ if (isset($_SESSION['MM_Usuario'])) {
 
         echo "</tr>";
     }
-                    } else {
-                        echo "<tr><td colspan='4'>Erro na consulta: " . mysqli_error($link) . "</td></tr>";
-                    }
+} else {
+    echo "<tr><td colspan='4'>Erro na consulta: " . mysqli_error($link) . "</td></tr>";
+}
+
+// Exibe o total de boletos
+echo "<div style='text-align: center; font-weight: bold; color: blue;'>Total de boletos: " . $total_boletos_ . "</div>";
+
                     ?>
                 </tbody>
             </table>
