@@ -313,7 +313,7 @@ if (isset($_SESSION['MM_Usuario'])) {
 }
 
 // Exibe o total de boletos
-echo "<div style='text-align: center; font-weight: bold; color: blue;'>Total de boletos: " . $total_boletos_ . "</div>";
+echo "<div style='text-align: center; font-weight: bold; color: blue;'>Total de Planos: " . $total_boletos_ . "</div>";
 
                     ?>
                 </tbody>
